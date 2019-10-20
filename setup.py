@@ -13,12 +13,16 @@ setup(
     install_requires=[
         'sqlalchemy',
         'stringcase',
+        'normality',
         'click'
     ],
     extras_require={
         'postgres': [
             'psycopg2-binary',
-        ]
+        ],
+        'mssql': [
+            'pyodbc',
+        ],
     },
     entry_points={
         'console_scripts': [

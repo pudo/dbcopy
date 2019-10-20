@@ -1,1 +1,5 @@
 dbcopy.egg-info/
+*.db
+*.sqlite
+*.sqlite3
+__pycache__
