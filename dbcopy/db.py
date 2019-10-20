@@ -69,8 +69,6 @@ class Database(object):
             total += len(rows)
             if not len(rows):
                 break
-            log.info(" -> copy %s -> %s: %s",
-                     source_table, target_table, total)
             chunk = []
             for row in rows:
                 item = {}
@@ -78,4 +76,5 @@ class Database(object):
                     target_name = mapping.columns.get(src_name)
                     item[target_name] = value
                 chunk.append(item)
+                yield item
             target_table.insert().execute(chunk)

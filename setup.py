@@ -14,7 +14,8 @@ setup(
         'sqlalchemy',
         'stringcase',
         'normality',
-        'click'
+        'click',
+        'tqdm',
     ],
     extras_require={
         'postgres': [

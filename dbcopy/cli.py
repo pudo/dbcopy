@@ -1,5 +1,6 @@
 import click
 import logging
+import tqdm
 
 from dbcopy.db import Database
 from dbcopy.util import NameMapping
@@ -31,9 +32,9 @@ def dbcopy(source_uri, target_uri):
                  len(mapping.columns),
                  count)
         target_table = target_db.create(table, mapping, drop=True)
-        target_db.copy(source_db, table, target_table, mapping)
-        # print(table, mapping.name, type(table), count)
-        # print(mapping.name, mapping.columns)
+        progress = target_db.copy(source_db, table, target_table, mapping)
+        for row in tqdm.tqdm(progress, total=count, unit='rows', leave=False):
+            pass
 
 
 if __name__ == "__main__":
