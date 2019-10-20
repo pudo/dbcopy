@@ -26,7 +26,7 @@ def dbcopy(source_uri, target_uri):
             return
 
         count = source_db.count(table)
-        log.info(" %s -> %s (%s columns, %s rows)",
+        log.info("Copy: %s -> %s (%s columns, %s rows)",
                  table.name,
                  mapping.name,
                  len(mapping.columns),

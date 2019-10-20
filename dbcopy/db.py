@@ -1,8 +1,10 @@
 import logging
+from urllib.parse import urlparse
 
 from sqlalchemy import Column, Table
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy import types
+from sqlalchemy.pool import NullPool
 
 log = logging.getLogger(__name__)
 
@@ -23,9 +25,18 @@ class Database(object):
     )
 
     def __init__(self, uri):
+        engine_kwargs = {
+            'poolclass': NullPool
+        }
+        scheme = urlparse(uri).scheme.lower()
+        self.is_sqlite = 'sqlite' in scheme
+        self.is_postgres = 'postgres' in scheme
+        self.is_mysql = 'mysql' in scheme
+        self.is_mssql = 'mssql' in scheme
+
         self.uri = uri
         self.meta = MetaData()
-        self.engine = create_engine(uri)
+        self.engine = create_engine(uri, **engine_kwargs)
         self.meta.bind = self.engine
         self.meta.reflect()
 
@@ -61,8 +72,9 @@ class Database(object):
 
     def copy(self, source_db, source_table, target_table, mapping,
              chunk_size=10000):
-        sq = source_table.select()
-        proxy = source_db.engine.execute(sq)
+        conn = source_db.engine.connect()
+        conn = conn.execution_options(stream_results=True)
+        proxy = conn.execute(source_table.select())
         total = 0
         while True:
             rows = proxy.fetchmany(size=chunk_size)
