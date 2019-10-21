@@ -2,7 +2,7 @@ from setuptools import setup
 
 setup(
     name='dbcopy',
-    version='0.1.0',
+    version='0.1.1',
     description="Copy contents of a SQL database to another",
     url='https://github.com/pudo/dbcopy',
     author='OCCRP',
