@@ -28,11 +28,11 @@ class Database(object):
         engine_kwargs = {
             'poolclass': NullPool
         }
-        scheme = urlparse(uri).scheme.lower()
-        self.is_sqlite = 'sqlite' in scheme
-        self.is_postgres = 'postgres' in scheme
-        self.is_mysql = 'mysql' in scheme
-        self.is_mssql = 'mssql' in scheme
+        self.scheme = urlparse(uri).scheme.lower()
+        # self.is_sqlite = 'sqlite' in self.scheme
+        # self.is_postgres = 'postgres' in self.scheme
+        # self.is_mysql = 'mysql' in self.scheme
+        # self.is_mssql = 'mssql' in self.scheme
 
         self.uri = uri
         self.meta = MetaData()
@@ -42,7 +42,7 @@ class Database(object):
 
     @property
     def tables(self):
-        return reversed(self.meta.sorted_tables)
+        return self.meta.sorted_tables
 
     def count(self, table):
         return self.engine.execute(table.count()).scalar()
@@ -64,6 +64,7 @@ class Database(object):
             table = self.meta.tables[mapping.name]
             if not drop:
                 return table
+            log.warning("Drop existing table: %s", mapping.name)
             table.drop(self.engine)
             self.meta.remove(table)
         target_table = Table(mapping.name, self.meta, *columns)
@@ -75,10 +76,9 @@ class Database(object):
         conn = source_db.engine.connect()
         conn = conn.execution_options(stream_results=True)
         proxy = conn.execute(source_table.select())
-        total = 0
+        # log.info("Chunk size: %d", chunk_size)
         while True:
             rows = proxy.fetchmany(size=chunk_size)
-            total += len(rows)
             if not len(rows):
                 break
             chunk = []
