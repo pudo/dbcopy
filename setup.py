@@ -1,9 +1,14 @@
 from setuptools import setup
 
+with open('README.md') as f:
+    long_description = f.read()
+
 setup(
     name='dbcopy',
     version='0.1.1',
     description="Copy contents of a SQL database to another",
+    long_description=long_description,
+    long_description_content_type='text/markdown',
     url='https://github.com/pudo/dbcopy',
     author='OCCRP',
     license='MIT',
