@@ -14,20 +14,24 @@ class Database(object):
 
     TYPE_MAPPINGS = {
         types.VARCHAR: types.Unicode,
-        mysql.MEDIUMBLOB: types.BLOB,
-        mysql.MEDIUMINT: types.BigInteger,
+        types.Enum: types.Unicode,
+        mysql.MEDIUMBLOB: types.LargeBinary,
+        mysql.LONGBLOB: types.LargeBinary,
+        mysql.MEDIUMINT: types.Integer,
         mysql.BIGINT: types.BigInteger,
         mysql.MEDIUMTEXT: types.Unicode,
-        mysql.TINYINT: types.Boolean
+        mysql.LONGTEXT: types.Unicode,
+        mysql.BLOB: types.LargeBinary,
+        types.BLOB: types.LargeBinary,
     }
 
     TYPE_BASES = (
         types.ARRAY,
         types.JSON,
         types.DateTime,
+        types.BigInteger,
         types.Numeric,
         types.Float,
-        types.BigInteger,
         types.Integer,
         types.Enum,
     )
@@ -38,7 +42,7 @@ class Database(object):
         }
         self.scheme = urlparse(uri).scheme.lower()
         # self.is_sqlite = 'sqlite' in self.scheme
-        self.is_postgres = 'postgres' in self.scheme
+        # self.is_postgres = 'postgres' in self.scheme
         # self.is_mysql = 'mysql' in self.scheme
         # self.is_mssql = 'mssql' in self.scheme
 
@@ -60,16 +64,16 @@ class Database(object):
         for base in self.TYPE_BASES:
             if issubclass(type_, base):
                 type_ = base
-        if type_ == types.Enum:
-            type_ = types.Unicode
-        return type_
+                break
+        return self.TYPE_MAPPINGS.get(type_, type_)
 
     def create(self, table, mapping, drop=False):
         columns = []
         for column in table.columns:
             cname = mapping.columns.get(column.name)
             ctype = self._translate_type(type(column.type))
-            columns.append(Column(cname, ctype, nullable=column.nullable))
+            # not reading nullable from source:
+            columns.append(Column(cname, ctype, nullable=True))
         if mapping.name in self.meta.tables:
             table = self.meta.tables[mapping.name]
             if not drop:
@@ -82,8 +86,8 @@ class Database(object):
         return (target_table, False)
 
     def _convert_value(self, value, table, column):
-        if isinstance(column.type, types.DateTime):
-            if value == '0000-00-00 00:00:00':
+        if isinstance(column.type, (types.DateTime, types.Date)):
+            if value in ('0000-00-00 00:00:00', '0000-00-00'):
                 value = None
         return value
 
