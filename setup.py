@@ -26,9 +26,15 @@ setup(
         'postgres': [
             'psycopg2-binary',
         ],
+        'postgressql': [
+            'psycopg2-binary',
+        ],
         'mssql': [
             'pyodbc',
         ],
+        'mysql': [
+            'PyMySQL',
+        ]
     },
     entry_points={
         'console_scripts': [
