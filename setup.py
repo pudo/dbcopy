@@ -5,7 +5,7 @@ with open('README.md') as f:
 
 setup(
     name='dbcopy',
-    version='0.1.2',
+    version='0.1.3',
     description="Copy contents of a SQL database to another",
     long_description=long_description,
     long_description_content_type='text/markdown',
