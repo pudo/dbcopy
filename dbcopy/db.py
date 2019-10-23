@@ -1,5 +1,6 @@
 import logging
 from urllib.parse import urlparse
+from normality.cleaning import remove_unsafe_chars
 
 from sqlalchemy import Column, Table
 from sqlalchemy import MetaData, create_engine
@@ -13,6 +14,7 @@ log = logging.getLogger(__name__)
 class Database(object):
 
     TYPE_MAPPINGS = {
+        types.CHAR: types.Unicode,
         types.VARCHAR: types.Unicode,
         types.Enum: types.Unicode,
         mysql.MEDIUMBLOB: types.LargeBinary,
@@ -20,9 +22,12 @@ class Database(object):
         mysql.MEDIUMINT: types.Integer,
         mysql.BIGINT: types.BigInteger,
         mysql.MEDIUMTEXT: types.Unicode,
+        mysql.TINYTEXT: types.Unicode,
         mysql.LONGTEXT: types.Unicode,
         mysql.BLOB: types.LargeBinary,
+        mysql.LONGBLOB: types.LargeBinary,
         types.BLOB: types.LargeBinary,
+        types.VARBINARY: types.LargeBinary,
     }
 
     TYPE_BASES = (
@@ -89,6 +94,9 @@ class Database(object):
         if isinstance(column.type, (types.DateTime, types.Date)):
             if value in ('0000-00-00 00:00:00', '0000-00-00'):
                 value = None
+        if isinstance(column.type, (types.String, types.Unicode)):
+            if isinstance(value, str):
+                value = remove_unsafe_chars(value)
         return value
 
     def copy(self, source_db, source_table, target_table, mapping,
