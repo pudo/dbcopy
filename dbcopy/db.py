@@ -29,6 +29,7 @@ class Database(object):
         mssql.base.VARBINARY: types.LargeBinary,
         mssql.base.IMAGE: types.LargeBinary,
         mssql.base.SMALLMONEY: types.Numeric,
+        mssql.base.SQL_VARIANT: types.LargeBinary,
         mysql.MEDIUMBLOB: types.LargeBinary,
         mysql.LONGBLOB: types.LargeBinary,
         mysql.MEDIUMINT: types.Integer,
