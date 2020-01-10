@@ -6,7 +6,7 @@ from sqlalchemy import Column, Table
 from sqlalchemy import MetaData, create_engine
 from sqlalchemy import types
 from sqlalchemy.pool import NullPool
-from sqlalchemy.dialects import mysql
+from sqlalchemy.dialects import mysql, mssql
 
 log = logging.getLogger(__name__)
 
@@ -17,6 +17,18 @@ class Database(object):
         types.CHAR: types.Unicode,
         types.VARCHAR: types.Unicode,
         types.Enum: types.Unicode,
+        mssql.base.NTEXT: types.Unicode,
+        mssql.base.NVARCHAR: types.Unicode,
+        mssql.base.NCHAR: types.Unicode,
+        mssql.base.VARCHAR: types.Unicode,
+        mssql.base.BIT: types.Boolean,
+        mssql.base.UNIQUEIDENTIFIER: types.Unicode,
+        mssql.base.TIMESTAMP: types.Binary,
+        mssql.base.XML: types.Unicode,
+        mssql.base.BINARY: types.Binary,
+        mssql.base.VARBINARY: types.LargeBinary,
+        mssql.base.IMAGE: types.LargeBinary,
+        mssql.base.SMALLMONEY: types.Numeric,
         mysql.MEDIUMBLOB: types.LargeBinary,
         mysql.LONGBLOB: types.LargeBinary,
         mysql.MEDIUMINT: types.Integer,
